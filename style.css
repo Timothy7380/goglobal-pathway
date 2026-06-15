@@ -364,12 +364,9 @@ select:focus-visible {
 }
 
 .hero-card--main {
-  position: relative;
-  width: 100%;
-  max-width: 360px;
+  width: fit-content;
+  max-width: 320px;
   margin-left: auto;
-  margin-top: 0;
-  padding-top: 76px;
 }
 
 .hero-card-label {
