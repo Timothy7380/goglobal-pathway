@@ -705,31 +705,62 @@ select:focus-visible {
 }
 
 /* ===================== TESTIMONIALS ===================== */
-.testimonials { padding: 88px 0; background: var(--white); }
+.testimonials {
+  padding: 88px 0;
+  background: var(--navy-darker);
+  position: relative;
+  overflow: hidden;
+}
+
+.testimonials .section-head .eyebrow { color: var(--pink); }
+.testimonials .section-head h2 { color: var(--white); }
 
 .carousel { position: relative; }
+
+/* Fade edges */
+.marquee-wrapper {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+@keyframes marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
 
 .carousel-track {
   display: flex;
   gap: 24px;
-  overflow: hidden;
-  scroll-snap-type: x mandatory;
+  width: max-content;
+  animation: marquee-scroll 30s linear infinite;
 }
+
+.carousel-track:hover { animation-play-state: paused; }
 
 .testimonial-card {
-  flex: 0 0 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
+  position: relative;
+  width: 340px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-md);
-  padding: 36px;
-  scroll-snap-align: start;
+  padding: 32px;
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
-.stars { color: var(--pink); font-size: 1.1rem; margin-bottom: 16px; letter-spacing: 2px; }
+.testimonial-card:hover {
+  transform: translateY(-6px);
+  background: rgba(255,255,255,0.1);
+  border-color: var(--pink);
+}
+
+.stars { color: var(--pink); font-size: 1rem; margin-bottom: 14px; letter-spacing: 3px; }
 
 .testimonial-card p {
-  font-size: 1.05rem;
-  color: var(--text);
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.8);
+  line-height: 1.75;
   margin-bottom: 24px;
 }
 
@@ -737,64 +768,30 @@ select:focus-visible {
   display: flex;
   align-items: center;
   gap: 14px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 18px;
 }
 
 .avatar {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--navy);
+  background: var(--pink);
   color: var(--white);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   flex-shrink: 0;
 }
 
-.testimonial-author strong { display: block; font-size: 0.95rem; color: var(--navy); }
-.testimonial-author span { font-size: 0.82rem; color: var(--text-muted); }
+.testimonial-author strong { display: block; font-size: 0.92rem; color: var(--white); }
+.testimonial-author span { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
 
-.carousel-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 28px;
-}
-
-.carousel-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--white);
-  color: var(--navy);
-  font-size: 1.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
-
-.carousel-btn:hover { background: var(--pink); color: var(--white); border-color: var(--pink); }
-
-.carousel-dots { display: flex; gap: 8px; }
-
-.carousel-dots button {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--border);
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.carousel-dots button.is-active {
-  background: var(--pink);
-  transform: scale(1.25);
-}
+.carousel-controls { display: none; }
+.carousel-dots { display: none; }
 
 /* ===================== FAQ ===================== */
 .faq { padding: 88px 0; background: var(--bg); }
@@ -1140,6 +1137,7 @@ select:focus-visible {
   .why-visual { order: -1; }
 
   .cta-inner { grid-template-columns: 1fr; }
+
 
   .services-grid { grid-template-columns: repeat(2, 1fr); }
   .route-map { grid-template-columns: repeat(3, 1fr); }
