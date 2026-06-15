@@ -89,41 +89,75 @@ document.addEventListener('DOMContentLoaded', () => {
   revealEls.forEach((el) => revealObserver.observe(el));
 
   /* ---------- Testimonial carousel ---------- */
-  const track = document.getElementById('carousel-track');
-  const slides = Array.from(track.children);
-  const dotsWrap = document.getElementById('carousel-dots');
-  const prevBtn = document.getElementById('carousel-prev');
-  const nextBtn = document.getElementById('carousel-next');
-  let current = 0;
-  let autoplayTimer;
+  const track      = document.getElementById('carousel-track');
+  const controls   = document.getElementById('carousel-controls');
+  const prevBtn    = document.getElementById('carousel-prev');
+  const nextBtn    = document.getElementById('carousel-next');
 
-  slides.forEach((_, i) => {
-    const dot = document.createElement('button');
-    dot.setAttribute('aria-label', `Go to testimonial ${i + 1}`);
-    if (i === 0) dot.classList.add('is-active');
-    dot.addEventListener('click', () => goToSlide(i));
-    dotsWrap.appendChild(dot);
-  });
+  if (track && prevBtn && nextBtn) {
+    const cards      = Array.from(track.children);
+    const total      = cards.length;
+    const GAP        = 24;
+    let current      = 0;
+    let paused       = false;
+    let autoTimer;
 
-  const dots = Array.from(dotsWrap.children);
+    function visibleCount() {
+      return window.innerWidth <= 600 ? 1 : 3;
+    }
 
-  function goToSlide(index) {
-    current = (index + slides.length) % slides.length;
-    track.scrollTo({ left: slides[current].offsetLeft - track.offsetLeft, behavior: 'smooth' });
-    dots.forEach((d, i) => d.classList.toggle('is-active', i === current));
+    function setCardWidths() {
+      const visible   = visibleCount();
+      const vpW       = track.parentElement.offsetWidth;
+      const cardW     = (vpW - GAP * (visible - 1)) / visible;
+      track.style.setProperty('--card-w', cardW + 'px');
+      cards.forEach(c => c.style.width = cardW + 'px');
+      return cardW;
+    }
+
+    function slideTo(index) {
+      const visible  = visibleCount();
+      const maxIndex = total - visible;
+      current        = Math.max(0, Math.min(index, maxIndex));
+      const cardW    = setCardWidths();
+      track.style.transform = `translateX(-${current * (cardW + GAP)}px)`;
+    }
+
+    function startAuto() {
+      clearInterval(autoTimer);
+      if (!paused) {
+        autoTimer = setInterval(() => {
+          const visible  = visibleCount();
+          const maxIndex = total - visible;
+          slideTo(current >= maxIndex ? 0 : current + 1);
+        }, 4000);
+      }
+    }
+
+    prevBtn.addEventListener('click', () => {
+      paused = true;
+      controls.classList.add('is-paused');
+      slideTo(current - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      paused = true;
+      controls.classList.add('is-paused');
+      slideTo(current + 1);
+    });
+
+    // Resume auto-play when user leaves the carousel area
+    document.getElementById('carousel').addEventListener('mouseleave', () => {
+      paused = false;
+      controls.classList.remove('is-paused');
+      startAuto();
+    });
+
+    window.addEventListener('resize', () => slideTo(current));
+
+    setCardWidths();
+    startAuto();
   }
-
-  prevBtn.addEventListener('click', () => { goToSlide(current - 1); restartAutoplay(); });
-  nextBtn.addEventListener('click', () => { goToSlide(current + 1); restartAutoplay(); });
-
-  function restartAutoplay() {
-    clearInterval(autoplayTimer);
-    autoplayTimer = setInterval(() => goToSlide(current + 1), 6000);
-  }
-  restartAutoplay();
-
-  track.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
-  track.addEventListener('mouseleave', restartAutoplay);
 
   /* ---------- FAQ accordion ---------- */
   const faqQuestions = document.querySelectorAll('.faq-question');
